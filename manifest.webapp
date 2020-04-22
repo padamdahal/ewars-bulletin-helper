@@ -1,0 +1,29 @@
+{
+	"version":"1.0",
+	"name":"EWARS Smart Pivot",
+	"description":"EWARS Smart Pivot",
+	"icons":{
+		"16":"img/pivoticon.png",
+		"48":"img/pivoticon.png",
+		"128":"img/pivoticon.png"
+	},
+	"developer":{
+		"url":"http://facebook.com/padamd",
+		"name":"Padam",
+		"company":"EDCD",
+		"email":"dahal0514@gmail.com"
+	},
+	"activities":{
+		"dhis":{
+			"href":"*",
+			"namespace":null
+		}
+	},
+	"folderName":null,
+	"baseUrl":null,
+	"key":null,
+	"launchUrl":null,
+	"launch_path":"index.html",
+	"installs_allowed_from":null,
+	"default_locale":"en"
+}

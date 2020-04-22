@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head><!--ng-app="appMenu"> -->
+    <title>EWARS Visualization - DHIS</title>
+	<link rel="stylesheet" href="assets/orb/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="assets/orb/orb.css" />
+	<link rel="stylesheet" href="assets/orb/jquery-ui.css">
+	
+	<script type="text/javascript" src="assets/orb-deps/react-0.12.2.js"></script>
+	<script type="text/javascript" src="assets/orb/orb.js"></script>
+	
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="assets/pivottable/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/pivottable/jquery-ui.min.js"></script>
+	
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <link rel="stylesheet" type="text/css" href="assets/pivottable/pivot.css">
+	<link rel="stylesheet" type="text/css" href="assets/pivottable/c3.min.css">
+    <script type="text/javascript" src="assets/pivottable/pivot.js"></script>
+	<script type="text/javascript" src="assets/pivottable/d3.min.js"></script>
+	<script type="text/javascript" src="assets/pivottable/c3.min.js"></script>
+	<script type="text/javascript" src="assets/pivottable/c3_renderers.min.js"></script>
+	<script type="text/javascript" src="assets/pivottable/gchart_renderers.min.js"></script>
+
+	<script type="text/javascript" src="assets/common/table2excel.js"></script>
+	<script type="text/javascript" src="assets/fileSaver.js"></script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script><!-- Header -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script><!-- Image -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script><!-- Delimiter -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script><!-- List -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script><!-- Checklist -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script><!-- Quote -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script><!-- Code -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script><!-- Embed -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script><!-- Table -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script><!-- Link -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script><!-- Warning -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@latest"></script><!-- Marker -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@latest"></script><!-- Inline Code -->
+	<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+
+	<script type="text/javascript" src="assets/myScripts.js"></script>
+	
+    <style type="text/css">
+		body{font-family:verdana;font-size:80%;}
+		table{ table-layout:fixed;}
+		.drp-trgt{height:50px; overflow-x: auto;padding-bottom:15px;}
+		.filters{position:relative;float:left;width:48%;margin:5px;}
+		#pivot1{font-size:80%;}
+		#pivot2{overflow-x:scroll;font-size:90%;}
+		a.btn{font-weight:bold;cursor:pointer;color:#fff;padding:5px;border:1px solid #eee;width:auto;position:relative;float:left;background-color:#6496c8;margin-right:10px; transition: background-color 0.5s ease;}
+		a.btn:hover{background:#57c0f9;}
+		/* DHIS Menu */
+		.topmenu{border-radius:4px;overflow:visible;width:100%;position:relative;float:left;padding:5px;margin:5px 0;border:1px solid #ececec;height:auto;background:#276696;}
+		.topmenu #title{font-family:tahoma;padding-left:10px;width:40%;position:relative;float:left;margin:5px 0;color:#fff;font-size:20px;}
+    </style>
+	
+	<script type="text/javascript">
+		// For DHIS menu
+		window.dhis2 = window.dhis2 || {};
+        dhis2.settings = dhis2.settings || {};
+        dhis2.settings.baseUrl = 'dhis';
+		google.load("visualization", "1", {packages:["corechart", "charteditor"]});	
+	</script>
+	<!-- DHIS Menu -->
+	<link type="text/css" rel="stylesheet" href="../../../dhis-web-commons/font-awesome/css/font-awesome.min.css"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="../../../dhis-web-commons/css/menu.css">
+	<script type="text/javascript" src="../../../dhis-web-commons/javascripts/dhis2/dhis2.menu.js"></script>
+    <script type="text/javascript" src="../../../dhis-web-commons/javascripts/dhis2/dhis2.menu.ui.js"></script>
+	<script type="text/javascript" src="../../../dhis-web-commons/javascripts/dhis2/dhis2.translate.js"></script>
+	
+	<!-- /DHIS Menu -->
+</head>
+
+<body style="margin:0 auto;width:95%;">
+	<div class="topmenu">
+		<div id="title">EWARS Visualization App</div>
+		<div id="dhisDropDownMenu"></div>
+	</div>
+	<div id="tabs" style="position:relative;float:left;width:100%;">
+		<div id="data" style="position:relative;float:left;width:100%;padding-left:6px;padding-top:15px;padding-bottom:15px;border-bottom:1px solid green;">
+			<div style="position:relative;float:left;margin-right:15px;padding:5px;">Data Parameters</div>
+			<input style="position:relative;float:left;margin-right:15px;width:300px;padding:5px;" type="text" class="datepicker" value="2020-03-01" id="startDate" placeholder="Date from" autocomplete="false"/>
+			<input style="position:relative;float:left;margin-right:15px;width:300px;padding:5px;" type="text" class="datepicker" value="2020-04-03" id="endDate" placeholder="Date to" autocomplete="false"/>
+			<div class="btn btn-primary" style="position:relative;float:left;cursor:pointer;background:#036;padding:6px;color:#fff;" id="fetch">Fetch Data</div>
+			<div class="btn btn-primary" style="position:relative;float:left;cursor:pointer;background:#036;padding:6px;color:#fff;margin-left:10px;" id="refreshpivot">Refresh UI</div>
+			<div class="btn btn-primary" style="position:relative;float:left;padding:6px;margin-left:10px;" id="fetchstatus"></div>
+		</div>
+		<!--div id="pivot1" style="position:relative;float:left;width:100%;padding:3px;border-bottom:1px solid green;margin-bottom:15px;">
+			<div id="rr" style="position:relative;float:left;width:100%;padding:7px;">
+				<span style="font-size:25px;color:#eee;">Pivot UI will load here...</span>
+			</div>
+		</div -->
+		<div id="pivot2" style="padding:3px;position:relative;float:left;width:50%">
+			<div id="output" style="padding:7px;"></div>
+			<div id="buttons" style="position:relative;float:left;width:100%;padding:5px 0;border-bottom:1px solid #357ae8">
+				<a class="btn btn-xs btn-primary" id="print">Print</a>
+				<a class="btn btn-xs btn-primary" id="excel" ng-click="exportToExcel('.pvtTable')">Export As Excel</a>
+				<a class="btn btn-xs btn-primary" id="image">Export As Image</a>
+			</div>
+		</div>
+		<div id="preview" style="padding:3px;position:relative;float:right;width:45%;border:1px solid #eee;height:100%">
+			<table class="width:100%">
+				<tr>
+					<td><img src='http://edcd.gov.np/frontend/images/logo.png'/></td>
+					<td>Ministry of Health and Population<br/>Department of Health Services<br/>Epidemiology and Disease Control Division</td>
+					<td style="width:50%">Early Warning Reporting System<br/>Weekly Bulletin<br/>Epi Week 20</td>
+				</tr>
+				<tr>
+					<td colspan="3">Note: This  bulletin includes  data  since  January  2020 till  date,  including  comparison  of the  same  period last year. Since May 2019,  36  new  sentinel  
+				sites  (including public  hospitals,  private  hospitals, and  medical colleges)were  added  andwere gradually  oriented  and  started  reporting,  thus  increasing  the  number  
+				of reporting sites.The current number of sentinel sites is 118.
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<h4>Early Warning Reporting System</h4>
+						<div id="highlights-title" style="background:aqua;border:1px solid #eee;text-align:center;padding:5px;">Highlights</div>
+						<div id="highlights" style="background:#EEE;padding-bottom:25px !important"></div>	
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<div id="intro">
+							The  EWARS  was  established  in  1997  to strengthen  the  flow  of  information  on  vector-borne  and  other  outbreak prone  
+							infectious  diseases  from  the  district  to  Epidemiology  and  Disease  Control  Division  (EDCD)  and  Vector-Borne Disease  Research  and  Training  Center  (VBDRTC),  
+							Hetauda.  Rapid  Response  Teams  (RRTs)  can  be  mobilized  at  short notice to facilitate prompt outbreak response at central, provincial and local levels. RRTs can also 
+							support local level health institutions for investigation and outbreak control activities.This information system is hospital-based. So far, the EWARS mainly focuses on the 
+							weekly reportingof number of cases  and  deaths  (including  "zero"  reports)  of  six  priority  diseases/syndromes—Malaria,  Kala-azar,  Dengue,  Acute Gastroenteritis   
+							(AGE),   Cholera   and   Severe   Acute   Respiratory   Infection   (SARI),   and   other  epidemic   potential diseases/syndromes (like enteric fever). It equally focuses 
+							on immediate reporting(to be reported within 24 hours of diagnosis) of one confirmed case of Cholera, Kala-azar,Malaria and one case of Dengue as well as 5 or more cases of 
+							AGE orSARI from the same geographical locality in one-week period.
+						</div>	
+					</td>
+				</tr>			
+				<tr>
+					<td colspan="3">
+						<div id="editorjs"></div>
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+	</div>	
+	<script>
+    const saveButton = document.getElementById('saveButton');
+	var editor = new EditorJS({
+		holder: 'editorjs',
+		tools: {
+			header: {
+				class: Header,
+				inlineToolbar: ['link'],
+				config: {
+				   placeholder: 'Header'
+				},
+				shortcut: 'CMD+SHIFT+H'
+			},
+			image: SimpleImage,
+			list: {
+				class: List,
+				inlineToolbar: true,
+				shortcut: 'CMD+SHIFT+L'
+			},
+			checklist: {
+				class: Checklist,
+				inlineToolbar: true,
+			},
+			quote: {
+				class: Quote,
+				inlineToolbar: true,
+				config: {
+				  quotePlaceholder: 'Enter a quote',
+				  captionPlaceholder: 'Quote\'s author',
+				},
+				shortcut: 'CMD+SHIFT+O'
+			},
+			warning: Warning,
+			marker: {
+				class:  Marker,
+				shortcut: 'CMD+SHIFT+M'
+			},
+			code: {
+				class:  CodeTool,
+				shortcut: 'CMD+SHIFT+C'
+			},
+			delimiter: Delimiter,
+			inlineCode: {
+				class: InlineCode,
+				shortcut: 'CMD+SHIFT+C'
+			},
+			linkTool: LinkTool,
+			embed: Embed,
+			table: {
+				class: Table,
+				inlineToolbar: true,
+				shortcut: 'CMD+ALT+T'
+			}
+		},
+		/* Initial Editor data */
+		data: {
+			blocks: [
+			  {
+				type : 'paragraph',
+				data : {
+				  text : 'Note: This  bulletin includes  data  since  January  2020 till  date,  including  comparison  of the  same  period last year. Since May 2019,  36  new  sentinel  \
+				sites  (including public  hospitals,  private  hospitals, and  medical colleges)were  added  andwere gradually  oriented  and  started  reporting,  thus  increasing  the  number of reporting sites.The current \
+				number of sentinel sites is 118.'
+				}
+			  },
+			  {type: "header",
+				data: {
+				  text: "Early Warning Reporting System",
+				  level: 3
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "Highlights",
+				  level: 3
+				}
+			  },
+			  {
+				type : 'list',
+				data : {
+				  items : [
+					'It is a block-styled editor',
+					'It returns clean data output in JSON',
+					'Designed to be extendable and pluggable with a simple API',
+				  ],
+				  style: 'unordered'
+				}
+			  },
+			  {
+				type : 'paragraph',
+				data : {
+				  text : 'The  EWARS  was  established  in  1997  to strengthen  the  flow  of  information  on  vector-borne  and  other  outbreak prone \
+				  infectious  diseases  from  the  district  to  Epidemiology  and  Disease  Control  Division  (EDCD)  and  Vector-Borne Disease  Research  and  Training  Center  (VBDRTC),  \
+				  Hetauda.  Rapid  Response  Teams  (RRTs)  can  be  mobilized  at  short notice to facilitate prompt outbreak response at central, provincial and local levels. RRTs can also \
+				  support local level health institutions for investigation and outbreak control activities.This information system is hospital-based. So far, the EWARS mainly focuses on the \
+				  weekly reportingof number of cases  and  deaths  (including  "zero"  reports)  of  six  priority  diseases/syndromes—Malaria,  Kala-azar,  Dengue,  Acute Gastroenteritis \
+				  (AGE),   Cholera   and   Severe   Acute   Respiratory   Infection   (SARI),   and   other  epidemic   potential diseases/syndromes (like enteric fever). It equally focuses \
+				  on immediate reporting(to be reported within 24 hours of diagnosis) of one confirmed case of Cholera, Kala-azar,Malaria and one case of Dengue as well as 5 or more cases of \
+				  AGE orSARI from the same geographical locality in one-week period.'
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "1. Acute Gastroenteritis",
+				  level: 3
+				}
+			  },
+			  {
+				type: 'image',
+				data: {
+				  url: 'https://wcs.smartdraw.com/bar-graph/img/simplebarchart.jpg',
+				  caption: '124 cases of AGE are reported this week. The majority of these cases are from Kailali (14cases), Rupandehi (8cases), Mahottari (7cases), Siraha (6cases),\
+				  Dhanusha (6cases)and Kapilvastu (6cases). 265 cases of AGEwere reported this weekin 2019.'
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "2. Severe Acute Respiratory Infection (SARI)",
+				  level: 3
+				}
+			  },
+			  {
+				type: 'image',
+				data: {
+				  url: 'https://www.nicepng.com/png/detail/469-4694382_column-chart-example-syntax-diagram.png',
+				  caption:'143 cases  of SARI are reported this week. The majority of these  cases  are fromKathmandu (18 cases), Morang (14 cases), Kailali (11 cases), Jhapa (10 cases) and Rolpa (7 cases).\
+				  175 cases of SARIwere reported this weekin 2019.'
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "3. Malaria",
+				  level: 3
+				}
+			  },{
+				type : 'paragraph',
+				data : {
+				  text : 'One caseofmalariais reported this weekfrom Nawalparasi East. Two casesof Malariawere reported this week in 2019.'
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "4. Dengue",
+				  level: 3
+				}
+			  },
+			  {
+				type : 'paragraph',
+				data : {
+				  text : 'One caseof dengue is reported this weekfrom Udayapur.No caseof Dengue wasreported this week in 2019.'
+				}
+			  },
+			  {
+				type: "header",
+				data: {
+				  text: "5. Kala-azar",
+				  level: 3
+				}
+			  },
+			  {
+				type : 'paragraph',
+				data : {
+				  text : 'Two casesof  kala-azar  are  reported  this week-one  each  fromSindhuli  and  Dadeldhura. No caseof Kala-azar was reported this weekin 2019.'
+				}
+			  },
+			  {
+				type : 'paragraph',
+				data : {
+				  text : 'Acknowledgement: The  Epidemiology  and  Disease  Control  Division  highly  acknowledges  the  contribution  from  all the sentinel sites, medical recorders, \
+				  EWARS focal persons and rapid response team members. Note: This bulletin is also available at EDCD’s website www.edcd.gov.np.Thank you.'
+				}
+			  }
+			]
+		},
+		onReady: function(){
+			saveButton.click();
+		},
+		onChange: function() {
+			console.log('something changed');
+		}
+	});
+	
+	/*
+	var editor = new EditorJS({
+		holder: 'highlights',
+		tools: {
+			list: {
+				class: List,
+				inlineToolbar: true,
+				shortcut: 'CMD+SHIFT+L'
+			}
+		},
+
+		data: {
+			blocks: [
+			  {
+				type : 'list',
+				data : {
+				  items : [
+					'It is a block-styled editor',
+					'It returns clean data output in JSON',
+					'Designed to be extendable and pluggable with a simple API',
+				  ],
+				  style: 'unordered'
+				}
+			  }
+			]
+		}
+	});
+	*/
+	
+    /**
+     * Saving example
+     */
+    saveButton.addEventListener('click', function () {
+      editor.save().then((savedData) => {
+        cPreview.show(savedData, document.getElementById("output"));
+      });
+    });
+  </script>
+</body>
+</html>
